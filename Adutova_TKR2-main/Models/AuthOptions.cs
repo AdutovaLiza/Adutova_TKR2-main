@@ -14,7 +14,7 @@ namespace Adutova_TKR2.Models
         public static int LifetimeInYears => 1;
         public static SecurityKey SigningKey => new SymmetricSecurityKey(Encoding.ASCII.GetBytes("superSecretKeyMustBeLoooooong"));
 
-        internal static object GenerateToken(bool is_admin = false)
+        internal static string GenerateToken(bool is_admin = false)
         {
             var now = DateTime.UtcNow;
             var claims = new List<Claim>
@@ -34,7 +34,7 @@ namespace Adutova_TKR2.Models
                     claims: identity.Claims,
                     signingCredentials: new SigningCredentials(SigningKey, SecurityAlgorithms.HmacSha256)); ;
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-            return new { token = encodedJwt };
+            return encodedJwt;
         }
     }
 }

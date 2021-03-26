@@ -8,7 +8,13 @@ namespace Adutova_TKR2.Models
     public class DataBase
     {
         List<Employer> Employers { get; set; }
-        List<Mission> Tasks { get; set; }
+        List<Mission> Missions { get; set; }
+
+        public static List<User> Users { get; } = new List<User>
+        {
+            new User(){ Login = "user", Password = "user" },
+            new User(){ Login = "admin", Password = "admin" },
+        };
 
         public DataBase()
         {
@@ -19,7 +25,7 @@ namespace Adutova_TKR2.Models
                 new Employer("AdutovaLiza"),
                 new Employer("LebedevaAnna"),
             };
-            Tasks = new List<Mission>
+            Missions = new List<Mission>
             {
                 new Mission("Task1"),
                 new Mission("Task2"),
@@ -33,9 +39,9 @@ namespace Adutova_TKR2.Models
         {
             return Employers;
         }
-        public List<Mission> GetTasks()
+        public List<Mission> GetMissions()
         {
-            return Tasks;
+            return Missions;
         }
 
         public void AddEmployer(Employer employer)
@@ -44,10 +50,10 @@ namespace Adutova_TKR2.Models
         }
         public void AddTask(Mission task)
         {
-            Tasks.Add(task);
+            Missions.Add(task);
         }
 
-        public List<string> GetEmployersTasks(int EmployerId)
+        public List<string> GetEmployersMissions(int EmployerId)
         {
             var Employer = Employers.FirstOrDefault(p => p.Id == EmployerId);
             if (Employer == null)
@@ -58,14 +64,11 @@ namespace Adutova_TKR2.Models
         }
         public Mission GetTask(int EmployerId)
         {
-            var task = Tasks.FirstOrDefault(p => p.Id == EmployerId);
+            var task = Missions.FirstOrDefault(p => p.Id == EmployerId);
             return task;
         }
 
-
-        /// //////////////////////////////////////////////////////
         public Employer GetEmployer(int EmployerId) => Employers.FirstOrDefault(p => p.Id == EmployerId);
-
 
 
         public bool AddTaskToEmployer(int EmployerId, int TaskId)
@@ -82,4 +85,4 @@ namespace Adutova_TKR2.Models
         }
     }
 }
-}
+

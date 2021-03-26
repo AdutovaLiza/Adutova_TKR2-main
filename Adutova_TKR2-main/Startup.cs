@@ -21,6 +21,7 @@ namespace Adutova_TKR2
 {
     public class Startup
     {
+        public static DataBase database = new DataBase();
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;

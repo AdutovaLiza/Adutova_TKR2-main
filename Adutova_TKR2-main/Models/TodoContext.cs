@@ -13,7 +13,7 @@ namespace Adutova_TKR2.Models
         {
         }
 
-        public DbSet<Mission> TodoItems { get; set; }
+        public DbSet<Mission> Missions { get; set; }
         public DbSet<Employer> Employers { get; set; }
     }
 }

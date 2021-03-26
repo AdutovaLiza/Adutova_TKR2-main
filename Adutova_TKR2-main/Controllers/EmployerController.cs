@@ -21,35 +21,38 @@ namespace Adutova_TKR2.Controllers
 
         // GET: api/Employers
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Employer>>> GetEmployers()
+        public IEnumerable<Employer> GetEmployers()
         {
-            return await _context.Employers.ToListAsync();
+            return Startup.database.GetEmployers();
         }
 
-        // GET: api/Employers/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Employer>> GetEmployer(long id)
-        {
-            var Employer = await _context.Employers.FindAsync(id);
 
-            if (Employer == null)
+        // GET: api/Employers/5
+
+        [HttpGet("{id}")]
+        public ActionResult<Employer> GetEmployer(int id) 
+        {
+            var employers = Startup.database.GetEmployers();
+            var employer = employers.FirstOrDefault(i => i.Id == id);
+
+            if (employer == null)
             {
                 return NotFound();
             }
 
-            return Employer;
+            return Ok(employer);
         }
 
-        // PUT: api/Employers/5
+
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutEmployer(long id, Employer emp)
+        public async Task<IActionResult> PutEmployer(long id, Employer employer)
         {
-            if (id != emp.Id)
+            if (id != employer.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(emp).State = EntityState.Modified;
+            _context.Entry(employer).State = EntityState.Modified;
 
             try
             {
@@ -72,28 +75,28 @@ namespace Adutova_TKR2.Controllers
 
         // POST: api/Employers
         [HttpPost]
-        public async Task<ActionResult<Employer>> PostEmployer([FromForm]Employer Employer)
+        public async Task<ActionResult<Employer>> PostEmployer(Employer employer)
         {
-            _context.Employers.Add(Employer);
+            _context.Employers.Add(employer);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetEmployer", new { id = Employer.Id }, Employer);
+            return CreatedAtAction("GetEmployer", new { id = employer.Id }, employer);
         }
 
         // DELETE: api/Employers/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<Employer>> DeleteEmployer(long id)
         {
-            var Employer = await _context.Employers.FindAsync(id);
-            if (Employer == null)
+            var employer = await _context.Employers.FindAsync(id);
+            if (employer == null)
             {
                 return NotFound();
             }
 
-            _context.Employers.Remove(Employer);
+            _context.Employers.Remove(employer);
             await _context.SaveChangesAsync();
 
-            return Employer;
+            return employer;
         }
 
         private bool EmployerExists(long id)

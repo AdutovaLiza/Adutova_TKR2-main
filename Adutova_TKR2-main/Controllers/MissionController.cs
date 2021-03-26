@@ -23,38 +23,79 @@ namespace Adutova_TKR2.Controllers
 
         // GET: api/Mission
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Mission>>> GetMission()
+        public IEnumerable<Mission> GetMissions()
         {
-            return await _context.Missions.ToListAsync();
+            return Startup.database.GetMissions();
         }
 
-        // GET: api/Mission/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Mission>> GetMission(long id)
-        {
-            var Mission = await _context.Missions.FirstOrDefaultAsync(i => i.Id == id);
-//            var Mission = _context.Mission.FirstOrDefault(i => i.Id == id);
 
-            if (Mission == null)
+        // GET: api/Missions/5
+        [HttpGet("{id}")]
+        public ActionResult<Mission> GetMission(int id)
+        {
+            var missions = Startup.database.GetMissions();
+            var mission = missions.FirstOrDefault(i => i.Id == id);
+
+            if (mission == null)
             {
                 return NotFound();
             }
 
-            return Mission;
+            return Ok(mission);
         }
 
-        // PUT: api/Mission/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutMission(long id, Models.Mission Mission)
+        [HttpGet("{id}/employers")]
+        public ActionResult<List<string>> GetEmployersMissions(int id) //by employers id
         {
-            if (id != Mission.Id)
+            var mission = Startup.database.GetEmployersMissions(id); 
+
+            if (mission == null)
+            {
+                return NotFound();
+            }
+
+            return mission;
+        }
+
+        [HttpPost]
+        public string AddTask([FromForm] Mission mission)
+        {
+            Startup.database.AddTask(mission);
+            return "OK";
+        }
+
+        [HttpPost("{id}/employer={EmployerId}")]
+        public ActionResult<Mission> AddEmployer(int id, int employerid)
+        {
+            var missions = Startup.database.GetMissions();
+            var mission = missions.FirstOrDefault(i => i.Id == id);
+            if (mission == null)
+            {
+                return NotFound();
+            }
+            var IsEmployerExists = mission.EmployersId.Contains(employerid);
+            if (IsEmployerExists == false)
+            {
+                if (Startup.database.AddTaskToEmployer(id, employerid))
+                {
+                    mission = missions.FirstOrDefault(i => i.Id == id);
+                    return Ok(mission);
+                }
+            }
+            return Ok(mission);
+        }
+
+        // PUT: api/Missions/5
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutMission(long id, Mission mission)
+        {
+            if (id != mission.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(Mission).State = EntityState.Modified;
+            _context.Entry(mission).State = EntityState.Modified;
 
             try
             {
@@ -75,30 +116,21 @@ namespace Adutova_TKR2.Controllers
             return NoContent();
         }
 
-        // POST: api/Mission
-        [HttpPost]
-        public async Task<ActionResult<Mission>> PostMission(Models.Mission Mission)
-        {
-            _context.Missions.Add(Mission);
-            await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetMission", new { id = Mission.Id }, Mission);
-        }
-
-        // DELETE: api/Mission/5
+        // DELETE: api/Missions/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<Mission>> DeleteMission(long id)
         {
-            var Mission = await _context.Missions.FindAsync(id);
-            if (Mission == null)
+            var mission = await _context.Missions.FindAsync(id);
+            if (mission == null)
             {
                 return NotFound();
             }
 
-            _context.Missions.Remove(Mission);
+            _context.Missions.Remove(mission);
             await _context.SaveChangesAsync();
 
-            return Mission;
+            return mission;
         }
 
         private bool MissionExists(long id)
@@ -107,3 +139,4 @@ namespace Adutova_TKR2.Controllers
         }
     }
 }
+
